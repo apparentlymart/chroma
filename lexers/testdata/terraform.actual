@@ -1,0 +1,27 @@
+variable "vpc_id" {
+  type = string
+}
+
+module "us-east-1" {
+  source          = "./region"
+  region          = "us-east-1"
+  base_cidr_block = var.base_cidr_block
+}
+
+resource "aws_subnet" "main" {
+  cidr_block = cidrsubnet(data.aws_vpc.target.cidr_block, 4, local.az_numbers["b"]))
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Shared security group for allowing HTTP
+resource "aws_security_group" "http" {
+  name = "${var.vpc_id}-http"
+
+  ingress {
+    from_port = 80
+    to_port   = 80
+  }
+}
